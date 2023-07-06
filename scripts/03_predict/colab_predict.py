@@ -3,12 +3,9 @@ import os
 import sys
 import json
 
-from pymongo import MongoClient
 import configargparse as argparse
 import torch
 import numpy as np
-
-import sacred
 
 import gunpowder as gp
 import incasem as fos
@@ -96,7 +93,8 @@ def directory_structure_setup(_config, _run):
 
     run_path = os.path.join(
         f"train_{int(_config['prediction']['run_id_training']):04d}",
-        f"predict_{_run._id:04d}"
+        "notebook"
+        #f"predict_{_run._id:04d}"
     )
     return run_path
 
@@ -379,67 +377,31 @@ def observer_setup():
         required=True,
         help='Run ID of training that is used to make predictions'
     )
-    parser.add_argument(
-        '--mongodb_training',
-        default='../02_train/trainings_db.json',
-        help='json file with credentials to mongodb with training experiments'
-    )
-    parser.add_argument(
-        '--mongodb_predictions',
-        default='predictions_db.json',
-        help=((
-            'json file with credentials'
-            'to mongodb with prediction experiments'
-        ))
-    )
+
     args, remaining_argv = parser.parse_known_args()
-
-    # create experiment observer
-    if args.mongodb_predictions:
-        logger.info(f"Attach Mongo observer")
-        with open(args.mongodb_predictions) as f:
-            db_config = json.load(f)
-
-        ex.observers.append(
-            sacred.observers.MongoObserver.create(
-                url=db_config['url'],
-                db_name=db_config['db_name']
-            )
-        )
 
     return args, remaining_argv
 
 
-def get_config_from_database(url, db_name, run_id):
-    client = MongoClient(
-        host=url,
-        port=27017
-    )
-    db = client[db_name]
-    run_document = db['runs'].find_one({'_id': run_id})
-    return run_document['config']
-
 
 if __name__ == '__main__':
+
     ex.add_config('config_prediction.yaml')
 
     args, remaining_argv = observer_setup()
 
-    # with open(args.mongodb_training) as f:
-    #     db_config = json.load(f)
-    # config = get_config_from_database(
-    #     db_config['url'],
-    #     db_config['db_name'],
-    #     args.run_id)
-    # ex.add_config(config)
-    #
-    # sacred_default_flags = ['-C', 'no']
-    # argv = [
-    #     sys.argv[0],
-    #     *sacred_default_flags,
-    #     *remaining_argv,
-    #     f'prediction.run_id_training={args.run_id}'
-    # ]
-    # logger.info(argv)
-    #
-    # ex.run_commandline(argv)
+    with open("test.json") as f:
+        config = json.load(f)
+
+    ex.add_config(config)
+
+    sacred_default_flags = ['-C', 'no']
+    argv = [
+        sys.argv[0],
+        *sacred_default_flags,
+        *remaining_argv,
+        f'prediction.run_id_training={args.run_id}'
+    ]
+    logger.info(argv)
+
+    ex.run_commandline(argv)
