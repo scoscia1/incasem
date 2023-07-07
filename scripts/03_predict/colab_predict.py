@@ -356,8 +356,9 @@ def predict(_config, checkpoint=None, iteration=0, run_path=None):
 
 if __name__ == '__main__':
 
-
-    with open("test.json") as f:
+    json_file = sys.argv[1]
+    
+    with open(json_file) as f:
         config = json.load(f)
 
     predict(config)
