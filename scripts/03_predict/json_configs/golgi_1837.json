@@ -5,9 +5,9 @@
   },
   "prediction": {
     "pipeline": "baseline",
-    "data": "data_configs/cell1_test.json",
-    "run_id_training": 2397,
-    "checkpoint": "../../training_runs/models/2397/model_checkpoint_86000",
+    "data": "data_configs/example_cell6.json",
+    "run_id_training": 1837,
+    "checkpoint": "../../models/pretrained_checkpoints/model_checkpoint_1837_golgi_CF.pt",
     "directories": {
       "prefix": "~/incasem/data"
     },
