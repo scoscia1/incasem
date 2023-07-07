@@ -386,7 +386,7 @@ def observer_setup():
 
 if __name__ == '__main__':
 
-    ex.add_config('~/incasem/scripts/03_predict/config_prediction.yaml')
+    ex.add_config('config_prediction.yaml')
 
     args, remaining_argv = observer_setup()
 
