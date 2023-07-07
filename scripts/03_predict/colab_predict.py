@@ -72,7 +72,6 @@ def model_setup(_config):
     total_params = sum(p.numel()
                        for p in model.parameters())
     logger.info(f'{total_params=}')
-    _run.log_scalar('num_params', total_params, 0)
 
     return model
 
@@ -165,7 +164,6 @@ def remove_context(batch, input_size_voxels, output_size_voxels):
 
 
 def log_metrics(
-        _run,
         target,
         prediction_probas,
         mask,
@@ -314,7 +312,7 @@ def predict(_config, checkpoint=None, iteration=0, run_path=None):
         with gp.build(prediction.pipeline) as p:
             request = gp.BatchRequest()
 
-            if _config['prediction']['log_metrics']:
+            if False:
                 provider_spec = p.spec
                 for key, spec in provider_spec.items():
                     if key in prediction.request:
@@ -342,9 +340,8 @@ def predict(_config, checkpoint=None, iteration=0, run_path=None):
             # )
 
             # TODO load files from disk as daisy datasets
-            if _config['prediction']['log_metrics']:
+            if False:
                 log_metrics(
-                    _run,
                     target=batch[gp.ArrayKey('LABELS')].data,
                     prediction_probas=batch[gp.ArrayKey('PREDICTIONS')].data,
                     mask=batch[gp.ArrayKey('MASK')].data,
