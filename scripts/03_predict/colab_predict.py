@@ -9,8 +9,6 @@ import numpy as np
 
 import gunpowder as gp
 import incasem as fos
-from incasem.tracking.sacred import ex
-
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -19,14 +17,12 @@ logger.setLevel(logging.INFO)
 logging.getLogger('gunpowder').setLevel(logging.INFO)
 
 
-@ex.capture
 def torch_setup(_config):
     torch.backends.cudnn.enabled = True
     torch.backends.cudnn.benchmark = True
 
 
-@ex.capture
-def model_setup(_config, _run):
+def model_setup(_config):
     model_type = _config['model']['type']
     if model_type == 'OneConv3d':
         model = fos.torch.models.OneConv3d(
@@ -81,8 +77,7 @@ def model_setup(_config, _run):
     return model
 
 
-@ex.capture
-def directory_structure_setup(_config, _run):
+def directory_structure_setup(_config):
 
     predictions_out_path = os.path.expanduser(
         _config['prediction']['directories']['prefix'])
@@ -111,8 +106,7 @@ def get_checkpoint(checkpoint_file):
     return checkpoint_file
 
 
-@ex.capture
-def multiple_prediction_setup(_config, _run, run_path, model_, checkpoint):
+def multiple_prediction_setup(_config, run_path, model_, checkpoint):
     prediction_datasets = fos.utils.create_multiple_config(
         _config['prediction']['data'])
     pred_setups = []
@@ -120,7 +114,6 @@ def multiple_prediction_setup(_config, _run, run_path, model_, checkpoint):
         pred_setups.append(
             prediction_setup(
                 _config,
-                _run,
                 run_path,
                 model_,
                 checkpoint,
@@ -129,8 +122,7 @@ def multiple_prediction_setup(_config, _run, run_path, model_, checkpoint):
     return pred_setups
 
 
-@ex.capture
-def prediction_setup(_config, _run, run_path, model_,
+def prediction_setup(_config, run_path, model_,
                      checkpoint, pred_dataset):
     pipeline_type = {
         'baseline': fos.pipeline.PredictionBaseline,
@@ -172,7 +164,6 @@ def remove_context(batch, input_size_voxels, output_size_voxels):
     return batch
 
 
-@ex.capture
 def log_metrics(
         _run,
         target,
@@ -302,24 +293,22 @@ def log_metrics(
     # shutil.rmtree(temp_path)
 
 
-@ex.main
-def predict(_config, _run, checkpoint=None, iteration=0, run_path=None):
+def predict(_config, checkpoint=None, iteration=0, run_path=None):
     """predict.
 
     """
 
     torch_setup(_config)
-    _run.add_artifact(_config['prediction']['data'])
 
     if run_path is None:
-        run_path = directory_structure_setup(_config, _run)
-    model = model_setup(_config, _run)
+        run_path = directory_structure_setup(_config)
+    model = model_setup(_config)
 
     if checkpoint is None:
         checkpoint = get_checkpoint(_config['prediction']['checkpoint'])
 
     predictions = multiple_prediction_setup(
-        _config, _run, run_path=run_path, model_=model, checkpoint=checkpoint)
+        _config, run_path=run_path, model_=model, checkpoint=checkpoint)
 
     for idx_pipeline, prediction in enumerate(predictions):
         with gp.build(prediction.pipeline) as p:
@@ -366,42 +355,12 @@ def predict(_config, _run, checkpoint=None, iteration=0, run_path=None):
                 )
 
 
-def observer_setup():
-    parser = argparse.ArgumentParser(
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter
-    )
-    parser.add_argument(
-        '--run_id',
-        '-r',
-        type=int,
-        required=True,
-        help='Run ID of training that is used to make predictions'
-    )
-
-    args, remaining_argv = parser.parse_known_args()
-
-    return args, remaining_argv
-
 
 
 if __name__ == '__main__':
 
-    ex.add_config('config_prediction.yaml')
-
-    args, remaining_argv = observer_setup()
 
     with open("test.json") as f:
         config = json.load(f)
 
-    ex.add_config(config)
-
-    sacred_default_flags = ['-C', 'no']
-    argv = [
-        sys.argv[0],
-        *sacred_default_flags,
-        *remaining_argv,
-        f'prediction.run_id_training={args.run_id}'
-    ]
-    logger.info(argv)
-
-    ex.run_commandline(argv)
+    predict(config)
