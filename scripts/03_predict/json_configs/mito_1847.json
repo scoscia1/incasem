@@ -5,9 +5,9 @@
   },
   "prediction": {
     "pipeline": "baseline",
-    "data": "data_configs/example_cell6.json",
+    "data": "../data_configs/example_cell6.json",
     "run_id_training": 1847,
-    "checkpoint": "../../models/pretrained_checkpoints/model_checkpoint_1847_mito_CF.pt",
+    "checkpoint": "../../../models/pretrained_checkpoints/model_checkpoint_1847_mito_CF.pt",
     "directories": {
       "prefix": "~/incasem/data"
     },
@@ -29,7 +29,7 @@
   },
   "training": {
     "pipeline": "baseline_with_context",
-    "data": "data_configs/c1_20.json",
+    "data": "../data_configs/c1_20.json",
     "iterations": 90000,
     "input_size_voxels": [
       204,
@@ -90,7 +90,7 @@
   },
   "validation": {
     "pipeline": "baseline_with_context",
-    "data": "data_configs/c1_val.json",
+    "data": "../data_configs/c1_val.json",
     "validate_every": 1000,
     "input_size_voxels": [
       204,
