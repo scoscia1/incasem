@@ -7,7 +7,7 @@
     "pipeline": "baseline",
     "data": "~/incasem/scripts/03_predict/data_configs/example_cell6.json",
     "run_id_training": 1841,
-    "checkpoint": "~incasem/models/pretrained_checkpoints/model_checkpoint_1841_er_CF.pt",
+    "checkpoint": "~/incasem/models/pretrained_checkpoints/model_checkpoint_1841_er_CF.pt",
     "directories": {
       "prefix": "~/incasem/data"
     },
