@@ -5,6 +5,7 @@ import numpy as np
 import zarr
 import sys
 import glob
+import os
 
 logger = logging.getLogger(__name__)
 
