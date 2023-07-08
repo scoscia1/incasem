@@ -384,7 +384,6 @@ def slice_dataset(a, slices):
 
     return a
 
-
 def open_dataset(f, ds):
     original_ds = ds
     ds, slices = parse_ds_name(ds)
