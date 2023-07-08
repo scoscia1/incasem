@@ -6,6 +6,7 @@ import zarr
 import sys
 import glob
 import os
+import daisy
 
 logger = logging.getLogger(__name__)
 
