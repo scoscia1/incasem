@@ -4,6 +4,7 @@ import neuroglancer
 import numpy as np
 import zarr
 import sys
+import glob
 
 logger = logging.getLogger(__name__)
 
