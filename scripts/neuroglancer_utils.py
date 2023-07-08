@@ -435,20 +435,9 @@ def open_dataset(f, ds):
         return [([daisy.open_ds(f, f"{ds}/{key}")
                   for key in zarr.open(f)[ds].keys()], ds)]
 
-if __name__ == "__main__":
 
-    file = ["/root/incasem/data/cell_6/cell_6.zarr"]
-    datasets = [["volumes/raw_equalized_0.02", 'volumes/labels/er']]
-
-    # If serve == True
-    if True:
-        neuroglancer.set_server_bind_address('0.0.0.0')
-
-    viewer = neuroglancer.Viewer()
-
-    # If args.shaders is None
-    if True:
-        shaders = [None] * len(file)
+def add_data_to_viewer(viewer, file, datasets):
+    shaders = [None] * len(file)
 
     for f, datasets, shaders in zip(file, datasets, shaders):
 
@@ -470,9 +459,9 @@ if __name__ == "__main__":
                     print(f"Couldn't read {ds}, skipping...")
                     raise e
                 print("Found scales %s" % ([
-                                               os.path.relpath(s, f)
-                                               for s in scales
-                                           ],))
+                    os.path.relpath(s, f)
+                    for s in scales
+                ],))
                 a = [
                     open_dataset(f, os.path.relpath(scale_ds, f))
                     for scale_ds in scales
@@ -498,5 +487,6 @@ if __name__ == "__main__":
                     shader=shad
                 )
 
-    url = str(viewer)
-    print(url)
+    return viewer
+
+
