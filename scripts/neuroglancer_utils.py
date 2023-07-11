@@ -475,6 +475,7 @@ def add_data_to_viewer(viewer, file, dataset_list, c=[0, 1, 2], h=[0.0, 0.0, 1.0
         if shaders is None:
             shaders = [None] * len(datasets)
         else:
+            shaders = ['rgb']*len(datasets)
             assert len(shaders) == len(datasets)
             shaders = [None if s == 'default' else s for s in shaders]
 
@@ -487,7 +488,9 @@ def add_data_to_viewer(viewer, file, dataset_list, c=[0, 1, 2], h=[0.0, 0.0, 1.0
                     context=s,
                     array=array,
                     name=dataset,
-
+                    shader=shad,
+                    c=c,
+                    h=h
                 )
 
     return viewer
