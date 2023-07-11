@@ -113,6 +113,7 @@ def add_layer(
     scale_rgb=False,
     c=[0, 1, 2],
     h=[0.0, 0.0, 1.0],
+    layer_type='im'
 ):
     """Add a layer to a neuroglancer context.
 
@@ -306,21 +307,33 @@ void main () {
 
     if is_multiscale:
 
+        if layer_type == 'im':
+            tt = 'image'
+        else:
+            tt = 'segmentation'
+
         layer = ScalePyramid(
             [
                 neuroglancer.LocalVolume(
-                    data=a.data, voxel_offset=voxel_offset, dimensions=array_dims
+                    data=a.data, voxel_offset=voxel_offset, dimensions=array_dims, volume_type=tt
                 )
                 for a, array_dims in zip(array, dimensions)
             ]
         )
 
     else:
+        if layer_type == 'im':
+            tt = 'image'
+        else:
+            tt = 'segmentation'
+
         layer = neuroglancer.LocalVolume(
             data=array.data,
             voxel_offset=voxel_offset,
             dimensions=dimensions,
+            volume_type=tt
         )
+
 
     context.layers.append(name=name, layer=layer, visible=visible, **kwargs)
 
@@ -435,12 +448,9 @@ def open_dataset(f, ds):
                   for key in zarr.open(f)[ds].keys()], ds)]
 
 
-def add_data_to_viewer(viewer, file, dataset_list, c=[0, 1, 2], h=[0.0, 0.0, 1.0]):
+def add_data_to_viewer(viewer, file, dataset_list):
 
-
-    #shaders = [None] * len(datasets)
-    shader_list = ['rgb'] * len(file)
-
+    shader_list = [None] * len(file)
 
     for f, datasets, shaders in zip(file, dataset_list, shader_list):
 
@@ -481,16 +491,19 @@ def add_data_to_viewer(viewer, file, dataset_list, c=[0, 1, 2], h=[0.0, 0.0, 1.0
 
         with viewer.txn() as s:
             for (array, dataset), shad in zip(arrays, shaders):
-                # if args.add_prefix
+
+                if "labels" in dataset or "predictions" in dataset:
+                    lt = "seg"
+                else:
+                    lt = "im"
+
                 if True:
                     dataset = os.path.join(name_prefix, dataset)
                 add_layer(
                     context=s,
                     array=array,
                     name=dataset,
-                    shader=shad,
-                    c=c,
-                    h=h
+                    layer_type=lt
                 )
 
     return viewer
