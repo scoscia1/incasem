@@ -436,7 +436,7 @@ def open_dataset(f, ds):
 
 
 def add_data_to_viewer(viewer, file, datasets):
-    shaders = ['rgb'] * len(file)
+    shaders = ['rgb'] * len(datasets[0])
 
     for f, datasets, shaders in zip(file, datasets, shaders):
 
@@ -468,12 +468,9 @@ def add_data_to_viewer(viewer, file, datasets):
             for a in dataset_as:
                 arrays.append(a)
 
-        if shaders is None:
-            shaders = [None] * len(datasets)
-        else:
-            assert len(shaders) == len(datasets)
-            shaders = [None if s == 'default' else s for s in shaders]
+        shaders = [None if s == 'default' else s for s in shaders]
 
+        # Add
         with viewer.txn() as s:
             for (array, dataset), shad in zip(arrays, shaders):
                 # if args.add_prefix
