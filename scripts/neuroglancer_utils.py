@@ -435,7 +435,7 @@ def open_dataset(f, ds):
                   for key in zarr.open(f)[ds].keys()], ds)]
 
 
-def add_data_to_viewer(viewer, file, datasets):
+def add_data_to_viewer(viewer, file, datasets, c=[]):
     shaders = [None] * len(datasets)
 
     for f, datasets, shaders in zip(file, datasets, shaders):
@@ -484,7 +484,8 @@ def add_data_to_viewer(viewer, file, datasets):
                     array=array,
                     name=dataset,
                     shader=shad,
-                    c= [0.0, 1.0, 0.0]
+                    c=[0, 1, 2],
+                    h=[0.0, 1.0, 0.0],
                 )
 
     return viewer
