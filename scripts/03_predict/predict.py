@@ -86,7 +86,7 @@ def directory_structure_setup(_config):
     # training run id, then prediction run id as subfolder
 
     run_path = os.path.join(
-        f"train_{int(_config['prediction']['run_id_training']):04d}",
+        f"{int(_config['prediction']['run_id_training']):04d}",
         "notebook"
         #f"predict_{_run._id:04d}"
     )
