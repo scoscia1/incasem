@@ -484,7 +484,7 @@ def add_data_to_viewer(viewer, file, datasets):
                     array=array,
                     name=dataset,
                     shader=shad,
-                    scale_rgb=True
+                    c= [0.0, 1.0, 0.0]
                 )
 
     return viewer
